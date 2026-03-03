@@ -1,0 +1,39 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.16.0/.schema/devbox.schema.json",
+  "packages": [
+    "terraform@latest",
+    "azure-cli@latest"
+  ],
+  "shell": {
+    "init_hook": [
+      "echo 'Azure PIM UAA Integration Development Environment'",
+      "echo '================================================='",
+      "echo ''",
+      "echo 'Available commands:'",
+      "echo '  terraform init    - Initialize Terraform providers'",
+      "echo '  terraform plan    - Preview changes'",
+      "echo '  terraform apply   - Apply changes'",
+      "echo '  az login          - Authenticate with Azure'",
+      "echo ''",
+      "echo 'Example usage:'",
+      "echo '  cd examples/credhub-admin'",
+      "echo '  cp terraform.tfvars.example terraform.tfvars'",
+      "echo '  # Edit terraform.tfvars with your values'",
+      "echo '  terraform init && terraform apply'",
+      "echo ''"
+    ],
+    "scripts": {
+      "test": [
+        "echo 'Running Terraform validation...'",
+        "cd modules/azure-pim-uaa-idp && terraform init -backend=false && terraform validate"
+      ],
+      "fmt": [
+        "terraform fmt -recursive"
+      ],
+      "docs": [
+        "echo 'Generating documentation...'",
+        "terraform-docs markdown modules/azure-pim-uaa-idp > modules/azure-pim-uaa-idp/README.md"
+      ]
+    }
+  }
+}

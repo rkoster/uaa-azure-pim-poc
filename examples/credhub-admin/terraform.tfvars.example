@@ -1,0 +1,121 @@
+# =============================================================================
+# Example Terraform Variables
+# =============================================================================
+# 
+# Copy this file to terraform.tfvars and fill in the values.
+#
+# Required Azure AD permissions for the service principal:
+#   - Group.ReadWrite.All
+#   - Application.ReadWrite.All
+#   - RoleManagement.ReadWrite.Directory
+#   - PrivilegedAccess.ReadWrite.AzureADGroup
+#
+# Required license:
+#   - Microsoft Entra ID P2 (for PIM for Groups)
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# REQUIRED: UAA SAML Configuration
+# -----------------------------------------------------------------------------
+
+# The SAML entity ID for your UAA instance
+# This is typically the metadata URL or a unique identifier
+uaa_entity_id = "https://uaa.sys.example.com/saml/metadata"
+
+# The Assertion Consumer Service URLs
+# These are the endpoints where Azure AD will POST SAML responses
+uaa_acs_urls = [
+  "https://uaa.sys.example.com/saml/SSO/alias/uaa.sys.example.com"
+]
+
+# Optional: Single logout URL
+# uaa_logout_url = "https://uaa.sys.example.com/saml/SingleLogout/alias/uaa.sys.example.com"
+
+# -----------------------------------------------------------------------------
+# REQUIRED: Eligible Users
+# -----------------------------------------------------------------------------
+
+# Azure AD user object IDs for users who should be eligible for CredHub admin
+# You can find these in Azure Portal > Users > [User] > Object ID
+# 
+# IMPORTANT: You need at least 2 users for 4-eyes approval to work
+eligible_member_ids = [
+  "00000000-0000-0000-0000-000000000001",  # User 1 (e.g., alice@example.com)
+  "00000000-0000-0000-0000-000000000002",  # User 2 (e.g., bob@example.com)
+  "00000000-0000-0000-0000-000000000003",  # User 3 (e.g., carol@example.com)
+]
+
+# -----------------------------------------------------------------------------
+# OPTIONAL: Azure AD Resource Names
+# -----------------------------------------------------------------------------
+
+# Name of the Azure AD security group
+group_name = "AAD-CredHub-Admins"
+
+# Name of the Azure AD SAML application
+application_name = "UAA-CredHub-SAML"
+
+# -----------------------------------------------------------------------------
+# OPTIONAL: App Roles (UAA Scopes)
+# -----------------------------------------------------------------------------
+
+# Define app roles that map to UAA scopes
+# You can add additional roles for other admin scopes (bosh, cf, etc.)
+app_roles = [
+  {
+    value        = "credhub-admin"
+    display_name = "CredHub Administrator"
+    description  = "Full administrative access to CredHub secrets management"
+  },
+  # Uncomment to add additional roles:
+  # {
+  #   value        = "bosh-admin"
+  #   display_name = "BOSH Administrator"  
+  #   description  = "Full administrative access to BOSH Director"
+  # },
+  # {
+  #   value        = "cf-admin"
+  #   display_name = "Cloud Foundry Administrator"
+  #   description  = "Full administrative access to Cloud Foundry"
+  # },
+]
+
+# -----------------------------------------------------------------------------
+# OPTIONAL: PIM Settings
+# -----------------------------------------------------------------------------
+
+# Maximum time a user can have active membership (1-24 hours)
+pim_max_activation_hours = 4
+
+# Require multi-factor authentication when activating
+pim_require_mfa = true
+
+# Require a justification message when activating
+pim_require_justification = true
+
+# Require another group member to approve (4-eyes principle)
+pim_require_approval = true
+
+# Send email notifications to all eligible members on activation requests
+pim_send_notifications = true
+
+# -----------------------------------------------------------------------------
+# OPTIONAL: Certificate Settings
+# -----------------------------------------------------------------------------
+
+# SAML signing certificate validity (1-10 years)
+certificate_validity_years = 2
+
+# -----------------------------------------------------------------------------
+# OPTIONAL: Misc Settings
+# -----------------------------------------------------------------------------
+
+# Tags to apply to Azure resources
+tags = {
+  Environment = "production"
+  ManagedBy   = "terraform"
+  Purpose     = "pim-uaa-integration"
+}
+
+# Generate a local YAML file with UAA configuration
+generate_uaa_config_file = true
